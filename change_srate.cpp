@@ -17,7 +17,11 @@ int recv(uhd::rx_streamer::sptr rx_stream, int packet_len, int nof_packets) {
   } while (n > 0                                                     && 
            md.error_code == uhd::rx_metadata_t::ERROR_CODE_NONE      && 
            recv_packets < nof_packets);
-  return recv_packets;  
+
+   if(md.error_code != uhd::rx_metadata_t::ERROR_CODE_NONE)
+       return -1;
+   else
+       return recv_packets;
 }
 
 
@@ -65,12 +69,24 @@ int main(int argc, char **argv) {
     cuhd_start_rx_stream(usrp);
     int n1 = recv(rx_stream, 1920, 50);
     cuhd_stop_rx_stream(usrp);
+    if(n1 == -1){
+          usrp = uhd::usrp::multi_usrp::make(args);
+          usrp->set_clock_source("internal");
+          rx_stream = usrp->get_rx_stream(stream_args);
+          usrp->set_rx_freq(freq);
+    }
 
     usrp->set_rx_rate(srate2);  
 
     cuhd_start_rx_stream(usrp);
     int n2 = recv(rx_stream, 15360, 50);
     cuhd_stop_rx_stream(usrp);
+    if(n2 == -1){
+        usrp = uhd::usrp::multi_usrp::make(args);
+        usrp->set_clock_source("internal");
+        rx_stream = usrp->get_rx_stream(stream_args);
+        usrp->set_rx_freq(freq);
+    }
 
     nof_changes++;    
     std::cout << "Done " << nof_changes << " sampling rate changes. Read: " 
