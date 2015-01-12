@@ -1,11 +1,17 @@
 #include <iostream>
 #include <complex>
 #include <unistd.h>
+#include <signal.h>
 
 #include <uhd/usrp/multi_usrp.hpp>
 #include <uhd/utils/msg.hpp>
 
 char dummy_buffer[1024*1024];
+static bool running = true;
+
+void intHandler(int dummy=0) {
+  running = false;
+}
 
 int recv(uhd::rx_streamer::sptr rx_stream, int packet_len, int nof_packets) {
   uhd::rx_metadata_t md;
@@ -40,6 +46,8 @@ int cuhd_stop_rx_stream(uhd::usrp::multi_usrp::sptr usrp)
 }
 
 int main(int argc, char **argv) {
+
+  signal(SIGINT, intHandler);
   
   std::string args = std::string("master_clock_rate=30720000");
   uhd::usrp::multi_usrp::sptr usrp = uhd::usrp::multi_usrp::make(args);
@@ -59,7 +67,7 @@ int main(int argc, char **argv) {
   usrp->set_rx_freq(freq);
   
   uint32_t nof_changes=0;
-  while(1) {
+  while(running) {
     usrp->set_rx_rate(srate1);  
 
     cuhd_start_rx_stream(usrp);
