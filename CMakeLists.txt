@@ -9,5 +9,8 @@ include_directories(${UHD_INCLUDE_DIRS})
 add_executable(change_srate change_srate.cpp)
 target_link_libraries(change_srate ${UHD_LIBRARIES})
 
+add_executable(change_srate_burst change_srate_burst.cpp)
+target_link_libraries(change_srate_burst ${UHD_LIBRARIES})
+
 add_executable(change_freq change_freq.cpp)
 target_link_libraries(change_freq ${UHD_LIBRARIES})
