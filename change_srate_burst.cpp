@@ -33,25 +33,6 @@ int recv(uhd::rx_streamer::sptr rx_stream, int packet_len, int nof_packets) {
    }
 }
 
-
-int cuhd_start_rx_stream(uhd::usrp::multi_usrp::sptr usrp)
-{
-  uhd::stream_cmd_t cmd(uhd::stream_cmd_t::STREAM_MODE_START_CONTINUOUS);
-  cmd.time_spec = usrp->get_time_now();
-  cmd.stream_now = true;
-  usrp->issue_stream_cmd(cmd);
-  return 0;
-}
-
-int cuhd_stop_rx_stream(uhd::usrp::multi_usrp::sptr usrp)
-{
-  uhd::stream_cmd_t cmd(uhd::stream_cmd_t::STREAM_MODE_STOP_CONTINUOUS);
-  cmd.time_spec = usrp->get_time_now();
-  cmd.stream_now = true;
-  usrp->issue_stream_cmd(cmd);
-  return 0;
-}
-
 int cuhd_start_rx_burst(uhd::usrp::multi_usrp::sptr usrp, int nsamps)
 {
   uhd::stream_cmd_t cmd(uhd::stream_cmd_t::STREAM_MODE_NUM_SAMPS_AND_DONE);
