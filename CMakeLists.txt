@@ -14,3 +14,6 @@ target_link_libraries(change_srate_burst ${UHD_LIBRARIES})
 
 add_executable(change_freq change_freq.cpp)
 target_link_libraries(change_freq ${UHD_LIBRARIES})
+
+add_executable(change_freq_burst change_freq_burst.cpp)
+target_link_libraries(change_freq_burst ${UHD_LIBRARIES})

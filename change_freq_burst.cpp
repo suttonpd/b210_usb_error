@@ -25,20 +25,10 @@ int recv(uhd::rx_streamer::sptr rx_stream, int packet_len, int nof_packets) {
   return recv_packets;  
 }
 
-
-int cuhd_start_rx_stream(uhd::usrp::multi_usrp::sptr usrp)
+int cuhd_start_rx_burst(uhd::usrp::multi_usrp::sptr usrp, int nsamps)
 {
-  uhd::stream_cmd_t cmd(uhd::stream_cmd_t::STREAM_MODE_START_CONTINUOUS);
-  cmd.time_spec = usrp->get_time_now();
-  cmd.stream_now = true;
-  usrp->issue_stream_cmd(cmd);
-  return 0;
-}
-
-int cuhd_stop_rx_stream(uhd::usrp::multi_usrp::sptr usrp)
-{
-  uhd::stream_cmd_t cmd(uhd::stream_cmd_t::STREAM_MODE_STOP_CONTINUOUS);
-  cmd.time_spec = usrp->get_time_now();
+  uhd::stream_cmd_t cmd(uhd::stream_cmd_t::STREAM_MODE_NUM_SAMPS_AND_DONE);
+  cmd.num_samps = nsamps;
   cmd.stream_now = true;
   usrp->issue_stream_cmd(cmd);
   return 0;
@@ -68,16 +58,12 @@ int main(int argc, char **argv) {
   uint32_t nof_changes=0;
   while(running) {
     usrp->set_rx_freq(freq1);
-
-    cuhd_start_rx_stream(usrp);
+    cuhd_start_rx_burst(usrp, 10*15360);
     int n1 = recv(rx_stream, 15360, 10);
-    cuhd_stop_rx_stream(usrp);
 
     usrp->set_rx_freq(freq2);
-
-    cuhd_start_rx_stream(usrp);
+    cuhd_start_rx_burst(usrp, 10*15360);
     int n2 = recv(rx_stream, 15360, 10);
-    cuhd_stop_rx_stream(usrp);
 
     nof_changes++;    
     std::cout << "Done " << nof_changes << " Rate changes. Read: " 
